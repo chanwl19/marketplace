@@ -5,29 +5,29 @@ const mongoose = require('mongoose');
 const productRoute = require('./routes/products');
 
 const MONGODB_URI =
-  'mongodb+srv://newuser:PAss1234567890@cluster0.zuqxwi9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/Marketplace';
+  'mongodb+srv://newuser:PAss1234567890@cluster0.zuqxwi9.mongodb.net/Marketplace?retryWrites=true&w=majority&appName=Cluster0';
 
 const app = express();
-const port = 3222 ;
+const port = 2100;
 
 app.use(bodyParser.json()); 
 app.use('/api/products', productRoute);
-
-app.listen(port, () => {
-  console.log(`Listening on http://localhost:${port}`);
-})
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  res.status(status).json({ message: message });
+});
 
 mongoose
   .connect(
     MONGODB_URI
   )
-  // .then(result => {
-  //   app.listen(port, () => {
-  //     console.log(`Listening on http://localhost:${port}`);
-  //   })
-  // })
+  .then(result => {
+    app.listen(port, () => {
+      console.log(`Listening on http://localhost:${port}`);
+    })
+  })
   .catch(err => console.log(err));
 
-  app.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}`);
-  })
+
